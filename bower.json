@@ -9,7 +9,10 @@
   "ignore": [
     "**/.*",
     "imported",
-    "lib"
+    "lib",
+    "*.rb",
+    "Gemfile*",
+    "README.md"
   ],
   "private": true
 }
