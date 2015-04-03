@@ -1,0 +1,22 @@
+{
+  "name": "ruby-nziff-picks-importer",
+  "main": [
+    "compiled/films.js",
+    "compiled/regions.js",
+    "compiled/reviews.js",
+  ],
+  "version": "0.0.1",
+  "homepage": "https://github.com/stefanpenner/ember-cli-shims",
+  "authors": [
+    "Stefan Penner <stefan.penner@gmail.com>",
+    "Manuel Wiedenmann <manuel@funkensturm.de>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "imported",
+    "lib"
+  ],
+  "private": true,
+  "dependencies": {}
+}
