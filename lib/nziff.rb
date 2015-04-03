@@ -17,10 +17,7 @@ class Nziff
     end
   end
 
-  # saves details of the given film
   def import(region, slug)
-    # TODO check if film has already been scraped
-    # and only scrape it if > 1.day.ago
     page = request("#{region}/#{slug}")
 
     film = {}.with_indifferent_access
@@ -30,14 +27,13 @@ class Nziff
     film[:title] = page.css(".article-title").xpath("span[@itemprop='name']").text
     film[:year] = page.css(".article-title").xpath("span[@itemprop='copyrightYear']").text
     film[:slug] = slug
-    film[:imdb_uri] = page.xpath("//a[text()[contains(.,'IMDb')]]").attr("href").value
+    film[:imdb_uri] = page.xpath("//a[text()[contains(.,'IMDb')]]").attr("href").value rescue nil
 
-    # TODO also scrape screenings when they're available
+    # TODO also scrape screening times when they're available
     puts "Saving film"
     File.open("imported/films/nziff/#{slug}.json", 'w') {|f| f.write(ActiveSupport::JSON.encode(film)) }
   end
 
-  # returns imported films as HashWithIndifferentAccess
   def imported
     Dir.glob('imported/films/nziff/*.json').map do |f|
       ActiveSupport::JSON.decode(File.read(f)).with_indifferent_access

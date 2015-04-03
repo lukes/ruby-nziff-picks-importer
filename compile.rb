@@ -7,7 +7,7 @@ films = Dir.glob('imported/films/rotten_tomatoes/*.json').map do |f|
   File.read(f)
 end
 
-reviews = Dir.glob('imported/reviews/nziff/*.json').map do |f|
+reviews = Dir.glob('imported/reviews/rotten_tomatoes/*.json').map do |f|
   File.read(f)
 end
 
