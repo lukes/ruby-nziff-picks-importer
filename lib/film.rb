@@ -12,10 +12,10 @@ class Film
 
     @film[:directors] = Array(params[:abridged_directors]).map{|d|d[:name]}
 
-    unless params[:posters][:original].match(/poster_default/)
-      @film[:image_m] = params[:posters][:detailed]
-      @film[:image_l] = params[:posters][:original]
-    end
+    # unless params[:posters][:original].match(/poster_default/)
+    #   @film[:image_m] = params[:posters][:detailed]
+    #   @film[:image_l] = params[:posters][:original]
+    # end
 
     @film[:rt_link] = params[:links][:alternate]
 
@@ -33,6 +33,7 @@ class Film
     puts "Saving film"
     # TODO merge with existing imported film
     File.open("imported/films/rotten_tomatoes/#{@film[:id]}.json", 'w') {|f| f.write(ActiveSupport::JSON.encode(@film)) }
+    self
   end
 
 end

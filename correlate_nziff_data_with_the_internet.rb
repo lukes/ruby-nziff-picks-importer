@@ -20,6 +20,7 @@ nziff_films.each do |nziff_film|
     puts "\tSave this film? [Y,n]"
     prompt = STDIN.gets.chomp.downcase
     if ["y", ""].include?(prompt)
+      # TODO the image
       Film.new(rt_film.merge(nziff_film)).save
       break
     else
