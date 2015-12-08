@@ -1,1 +1,9 @@
-{"film":"771366845","critic":"Kyle Smith","publication":"New York Post","quote":"The film by Yasuhiro Yoshiura suffers from many of the same flaws as other anime features - a plodding pace, broad humor, a bland heroine and snarly, one-dimensional villains.","positive":false,"link":"http://nypost.com/2014/08/27/patema-inverted-lacks-gravitational-pull/","id":"b3ee5"}
+{
+  "film": "771366845",
+  "critic": "Kyle Smith",
+  "publication": "New York Post",
+  "quote": "The film by Yasuhiro Yoshiura suffers from many of the same flaws as other anime features - a plodding pace, broad humor, a bland heroine and snarly, one-dimensional villains.",
+  "positive": false,
+  "link": "http://nypost.com/2014/08/27/patema-inverted-lacks-gravitational-pull/",
+  "id": "b3ee5"
+}

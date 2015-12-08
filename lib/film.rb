@@ -1,3 +1,5 @@
+require 'active_support/core_ext/hash'
+require 'json'
 require_relative 'rottentomatoes'
 
 class Film
@@ -32,7 +34,7 @@ class Film
   def save
     puts "Saving film"
     # TODO merge with existing imported film
-    File.open("imported/films/rotten_tomatoes/#{@film[:id]}.json", 'w') {|f| f.write(ActiveSupport::JSON.encode(@film)) }
+    File.open("imported/films/rotten_tomatoes/#{@film[:id]}.json", 'w') {|f| f.write(JSON.pretty_generate(@film)) }
     self
   end
 

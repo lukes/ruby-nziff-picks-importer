@@ -1,1 +1,9 @@
-{"film":"771363516","critic":"Nicolas Rapold","publication":"New York Times","quote":"An alchemical experiment well worth witnessing.","positive":true,"link":"http://www.nytimes.com/2014/11/20/movies/story-of-my-death-a-tale-of-casanova-and-dracula.html?partner=rss\u0026emc=rss","id":"eb6bf"}
+{
+  "film": "771363516",
+  "critic": "Nicolas Rapold",
+  "publication": "New York Times",
+  "quote": "An alchemical experiment well worth witnessing.",
+  "positive": true,
+  "link": "http://www.nytimes.com/2014/11/20/movies/story-of-my-death-a-tale-of-casanova-and-dracula.html?partner=rss&emc=rss",
+  "id": "eb6bf"
+}
