@@ -1,9 +1,9 @@
+require 'active_support/core_ext/hash'
+require 'json'
+require 'nokogiri'
 require 'open-uri'
 require 'singleton'
 require 'yaml'
-require 'active_support/json'
-require 'active_support/core_ext/hash'
-require 'nokogiri'
 
 class Nziff
   include Singleton
@@ -29,14 +29,13 @@ class Nziff
     film[:slug] = slug
     film[:imdb_uri] = page.xpath("//a[text()[contains(.,'IMDb')]]").attr("href").value rescue nil
 
-    # TODO also scrape screening times when they're available
     puts "Saving film"
-    File.open("imported/films/nziff/#{slug}.json", 'w') {|f| f.write(ActiveSupport::JSON.encode(film)) }
+    File.open("imported/films/nziff/#{slug}.json", 'w') {|f| f.write(JSON.generate(film)) }
   end
 
   def imported
     Dir.glob('imported/films/nziff/*.json').map do |f|
-      ActiveSupport::JSON.decode(File.read(f)).with_indifferent_access
+      JSON.parse(File.read(f)).with_indifferent_access
     end
   end
 

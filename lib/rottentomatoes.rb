@@ -1,8 +1,8 @@
+require 'active_support/core_ext/hash'
+require 'json'
 require 'open-uri'
 require 'singleton'
 require 'yaml'
-require 'active_support/json'
-require 'active_support/core_ext/hash'
 
 class RottenTomatoes
   include Singleton
@@ -25,7 +25,7 @@ private
 
   def request(path)
     uri = URI::encode(api_root + path)
-    ActiveSupport::JSON.decode(open(uri).read).with_indifferent_access
+    JSON.parse(open(uri).read).with_indifferent_access
   end
 
   def api_root

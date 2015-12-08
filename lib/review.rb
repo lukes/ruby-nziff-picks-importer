@@ -1,4 +1,5 @@
 require 'digest'
+require 'json'
 require_relative 'rottentomatoes'
 
 class Review
@@ -39,7 +40,7 @@ class Review
 
   def save
     puts "Saving #{type} review"
-    File.open("imported/reviews/rotten_tomatoes/#{@review[:id]}.json", 'w') {|f| f.write(ActiveSupport::JSON.encode(@review)) }
+    File.open("imported/reviews/rotten_tomatoes/#{@review[:id]}.json", 'w') {|f| f.write(JSON.pretty_generate(@review)) }
     # return the id
     @review[:id]
   end
