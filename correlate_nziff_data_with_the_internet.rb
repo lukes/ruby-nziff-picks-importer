@@ -17,12 +17,16 @@ nziff_films.each do |nziff_film|
 
   payload[:movies].each do |rt_film|
     puts "\t#{rt_film[:id]}\t#{rt_film[:year]}\t#{rt_film[:title]}\t#{rt_film[:synopsis]}"
-    puts "\tSave this film? [Y,n]"
+    puts "\tSave this film? [Y,n,s(kip),q(uit)]"
     prompt = STDIN.gets.chomp.downcase
     if ["y", ""].include?(prompt)
       # TODO the image
       Film.new(rt_film.merge(nziff_film)).save
       break
+    elsif prompt == "s"
+      break
+    elsif prompt == "q"
+      exit
     else
       puts "\tSkipping"
     end
