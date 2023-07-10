@@ -8,6 +8,7 @@ opts = Slop.parse do
   banner 'Usage: scrape_nziff_by_region.rb [options]'
 
   on 'r=', 'Region'
+  on 'y=', 'Year'
   on 'x=', 'Also scrape existing'
 end
 
@@ -16,17 +17,16 @@ unless opts[:r]
   exit
 end
 
-region = opts[:r].downcase
-
-film_slugs = Nziff.instance.fetch_slugs_by_region(region)
+nziff_import = NZIFF.new(region: opts[:r].downcase, year: opts[:y])
 
 # TODO unless -x is true, reject the film_slugs of things we've already scraped
 
-puts "#{film_slugs.count} found"
+puts "#{nziff_import.films.count} found"
 
-film_slugs.each do |slug|
-  puts "Importing film with slug #{slug}"
-  Nziff.instance.import(region, slug)
-  # be a good internet citizen by pausing between requests
+nziff_import.films.each do |film|
+  puts "Importing film with slug #{film.slug}"
+  film.import!
+
+  # Be a good internet citizen by pausing between requests
   sleep 3
 end
