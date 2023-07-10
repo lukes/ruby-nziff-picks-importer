@@ -11,9 +11,11 @@ GEM
     i18n (1.8.5)
       concurrent-ruby (~> 1.0)
     minitest (5.14.2)
-    nokogiri (1.13.9-arm64-darwin)
+    nokogiri (1.14.3-arm64-darwin)
       racc (~> 1.4)
-    racc (1.6.0)
+    nokogiri (1.14.3-x86_64-linux)
+      racc (~> 1.4)
+    racc (1.7.1)
     slop (3.5.0)
     thread_safe (0.3.6)
     tzinfo (1.2.8)
@@ -22,6 +24,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   activesupport
