@@ -8,8 +8,8 @@ opts = Slop.parse do
   banner 'Usage: scrape_nziff_by_region.rb [options]'
 
   on 'r=', 'Region'
-  on 'y=', 'Year'
-  on 'x=', 'Also scrape existing'
+  on 'y=', 'Year', default: Time.now.year
+  on 'x=', 'Also scrape existing', default: false
 end
 
 unless opts[:r]
@@ -18,12 +18,16 @@ unless opts[:r]
 end
 
 nziff_import = NZIFF.new(region: opts[:r].downcase, year: opts[:y])
-
-# TODO unless -x is true, reject the film_slugs of things we've already scraped
+imported_slugs = NZIFF.imported(opts[:y]).map { |film| film['slug'] }
 
 puts "#{nziff_import.films.count} found"
 
 nziff_import.films.each do |film|
+  if imported_slugs.include?(film.slug)
+    puts "Skipping film with slug #{film.slug}, already imported"
+    next
+  end
+
   puts "Importing film with slug #{film.slug}"
   film.import!
 

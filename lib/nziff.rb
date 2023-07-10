@@ -30,8 +30,8 @@ class NZIFF
     end
   end
 
-  def imported
-    Dir.glob("#{Film::IMPORT_PATH}/*.json").map do |f|
+  def self.imported
+    Dir.glob("#{Film.import_path(year)}/*.json").map do |f|
       JSON.parse(File.read(f)).with_indifferent_access
     end
   end

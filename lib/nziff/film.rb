@@ -14,11 +14,15 @@ class NZIFF
       @slug = slug
     end
 
+    def self.import_path(year)
+      [IMPORT_PATH, year].join('/')
+    end
+
     def import!
       page = request("#{region}/#{slug}")
 
       film = {
-        scraped: = Time.now
+        scraped: Time.now,
         tag: page.css(".category-label")[0].text,
         title: page.css(".article-title").xpath("span[@itemprop='name']").text,
         year: page.css(".article-title").xpath("span[@itemprop='copyrightYear']").text,
@@ -26,9 +30,12 @@ class NZIFF
         imdb_uri: (page.xpath("//a[text()[contains(.,'IMDb')]]").attr("href").value rescue nil)
       }
 
-      puts 'Saving film'
+      path = "#{self.class.import_path(year)}/#{slug}.json"
 
-      File.open("#{IMPORT_PATH}/#{slug}.json", 'w') {|f| f.write(JSON.generate(film)) }
+      puts 'Saving film'
+      puts path
+
+      File.open(path, 'w') { |f| f.write(JSON.generate(film)) }
     end
 
     private
