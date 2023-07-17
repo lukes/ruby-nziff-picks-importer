@@ -3,12 +3,12 @@
 require 'nokogiri'
 require 'open-uri'
 
-module NZIFF
+module RottenTomatoes
   module Request
-    HOST = 'https://www.nziff.co.nz'
+    HOST = 'https://www.rottentomatoes.com'
 
-    def self.call(path, year: Time.now.year.to_s)
-      uri = [HOST, year, path].join('/')
+    def self.call(path)
+      uri = [HOST, path].join
 
       Nokogiri::HTML(URI.parse(uri).open.read)
     end
