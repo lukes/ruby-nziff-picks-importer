@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
+require 'cgi'
 require 'nokogiri'
-require 'pry'
 
 module RottenTomatoes
   class Search

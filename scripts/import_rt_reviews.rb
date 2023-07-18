@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'slop'
+require 'tty-prompt'
 
 require_relative '../lib/nziff'
 require_relative '../lib/rottentomatoes'
@@ -16,34 +17,31 @@ if opts[:help]
   exit
 end
 
-def prompt!(results)
-  puts
+prompt = TTY::Prompt.new
 
-  if results.count == 1
-    puts "\tImport film? [Y,s(kip),q(uit)]"
-  else
-    puts "\tImport which film? [1-#{results.count},s(kip),q(uit)]"
-  end
-
-  $stdin.gets.chomp.downcase
-end
-
+# rubocop: disable Metrics/AbcSize
 # rubocop: disable Metrics/MethodLength
-def handle_prompt!(prompt, results, slug)
-  case prompt
-  when 'Y', 'y', ''
-    result = results[0]
-  when /\d/
-    result = results[prompt.to_i - 1]
-  when 'q'
-    exit
+def prompt!(results)
+  case results.count
+  when 0
+    prompt.say('No results found')
+  when 1
+    result = results.first
+    prompt.yes?("Import #{result.title}, #{result.year}?") == true
+  else
+    prompt_options = results.each_with_index.map { |r, i| { "#{r.title}, #{r.year}" => i } }
+    prompt_options << { 'Skip this' => results.count }
+
+    answer = prompt.select(
+      "Found #{results.count} results. Import which film?",
+      prompt_options,
+      per_page: results.count + 1
+    )
+
+    results[answer]
   end
-
-  return unless result
-
-  RottenTomatoes::Import.new(result, slug: slug).call
-  puts "\tImported!"
 end
+# rubocop: enable Metrics/AbcSize
 # rubocop: enable Metrics/MethodLength
 
 nziff_films = NZIFF::Import.imported
@@ -55,25 +53,17 @@ nziff_films.each do |nziff_film|
   next if opts[:'start-from'] && slug < opts[:'start-from']
 
   if !opts[:replace] && imported_slugs.include?(slug)
-    puts "Skipping #{title}, already imported"
+    prompt.say("Skipping #{title}, already imported")
     next
   end
 
-  puts "Searching for #{title}, #{year}"
+  prompt.say("Searching for #{title}, #{year}", color: :blue)
 
   results = RottenTomatoes::Search.new(title: title, director: director).call
+  answer = prompt!(results)
 
-  puts "\tFound:"
-
-  results.each_with_index do |result, i|
-    puts "\t\t[#{i + 1}] #{result.title}, #{result.year}"
+  if answer
+    RottenTomatoes::Import.new(answer, slug: slug).call
+    prompt.ok('Imported!')
   end
-
-  if results.count.zero?
-    puts "\tNo results found"
-    next
-  end
-
-  prompt = prompt!(results)
-  handle_prompt!(prompt, results, slug)
 end

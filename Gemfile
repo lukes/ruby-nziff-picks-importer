@@ -9,4 +9,5 @@ gem 'nokogiri'
 gem 'open-uri'
 gem 'rubocop', require: false
 gem 'tty-progressbar'
+gem 'tty-prompt'
 gem 'slop'
