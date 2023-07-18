@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require 'active_support/core_ext/hash'
 require 'json'
-require 'pry'
 
 module NZIFF
   class Import
@@ -14,7 +12,7 @@ module NZIFF
 
     def self.imported
       Dir.glob("#{IMPORT_PATH}/*.json").map do |f|
-        JSON.parse(File.read(f)).with_indifferent_access
+        JSON.parse(File.read(f))
       end
     end
 

@@ -14,7 +14,7 @@ module RottenTomatoes
 
     def self.imported
       Dir.glob("#{IMPORT_PATH}/*.json").map do |f|
-        JSON.parse(File.read(f)).with_indifferent_access
+        JSON.parse(File.read(f))
       end
     end
 
