@@ -7,6 +7,6 @@ gem 'cgi'
 gem 'json'
 gem 'nokogiri'
 gem 'open-uri'
-gem 'pry'
 gem 'rubocop', require: false
+gem 'tty-progressbar'
 gem 'slop'

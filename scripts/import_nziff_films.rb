@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'slop'
+require 'tty-progressbar'
 
 require_relative '../lib/nziff'
 
@@ -21,15 +22,24 @@ imported_slugs = NZIFF::Import.imported.map { _1['slug'] }
 
 puts "#{films.count} found"
 
+bar = TTY::ProgressBar.new('Downloading [:bar] :current/:total', total: films.count, clear: true)
+
 films.each do |film|
+  bar.advance
+
   if !opts[:replace] && imported_slugs.include?(film.slug)
-    puts "Skipping film with slug #{film.slug}, already imported"
+    bar.log("Skipping film with slug #{film.slug}, already imported")
+
     next
   end
 
-  puts "Importing film with slug #{film.slug}"
+  bar.log("Importing film with slug #{film.slug}")
+
   NZIFF::Import.new(film).call
 
   # Be a good internet citizen by pausing between requests
   sleep 1
 end
+
+bar.finish
+puts 'Finished'
