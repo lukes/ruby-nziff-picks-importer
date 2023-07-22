@@ -17,6 +17,8 @@ if opts[:region].nil? || opts[:help]
   exit
 end
 
+FileUtils.mkdir_p(NZIFF::Import::IMPORT_PATH)
+
 films = NZIFF::Search.new(region: opts[:region].downcase, year: opts[:year]).call
 imported_slugs = NZIFF::Import.imported.map { _1['slug'] }
 

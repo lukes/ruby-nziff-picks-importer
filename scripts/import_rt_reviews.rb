@@ -44,6 +44,8 @@ end
 # rubocop: enable Metrics/AbcSize
 # rubocop: enable Metrics/MethodLength
 
+FileUtils.mkdir_p(RottenTomatoes::Import::IMPORT_PATH)
+
 nziff_films = NZIFF::Import.imported
 imported_slugs = RottenTomatoes::Import.imported.map { _1['nziff_slug'] }
 
