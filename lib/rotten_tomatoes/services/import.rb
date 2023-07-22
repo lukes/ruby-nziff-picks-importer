@@ -12,9 +12,11 @@ module RottenTomatoes
       @slug = slug
     end
 
-    def self.imported
-      Dir.glob("#{IMPORT_PATH}/*.json").map do |f|
-        JSON.parse(File.read(f))
+    class << self
+      def imported
+        @imported ||= Dir.glob("#{IMPORT_PATH}/*.json").map do |f|
+          JSON.parse(File.read(f))
+        end
       end
     end
 
@@ -32,6 +34,7 @@ module RottenTomatoes
     attr_reader :path, :slug, :title, :year
 
     # rubocop: disable Metrics/MethodLength
+    # rubocop: disable Metrics/AbcSize
     def film_from_page
       page = Request.call(path)
 
@@ -43,7 +46,7 @@ module RottenTomatoes
         scraped: Time.now,
         title: title,
         path: path,
-        year: year,
+        year: year.to_i,
         nziff_slug: slug,
         audience_score: audience_score.to_i,
         critic_score: critic_score.to_i,
@@ -52,6 +55,7 @@ module RottenTomatoes
       }
     end
     # rubocop: enable Metrics/MethodLength
+    # rubocop: enable Metrics/AbcSize
 
     def bad_review
       page = Request.call(format(REVIEW_PATH, path: path, sort: 'rotten'))

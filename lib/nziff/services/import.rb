@@ -10,9 +10,11 @@ module NZIFF
       @film = film
     end
 
-    def self.imported
-      Dir.glob("#{IMPORT_PATH}/*.json").map do |f|
-        JSON.parse(File.read(f))
+    class << self
+      def imported
+        @imported ||= Dir.glob("#{IMPORT_PATH}/*.json").map do |f|
+          JSON.parse(File.read(f))
+        end
       end
     end
 
