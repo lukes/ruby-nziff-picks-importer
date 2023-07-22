@@ -3,7 +3,7 @@
 require 'tty-link'
 require 'tty-prompt'
 require 'tty-table'
-# require 'pry'
+
 
 require_relative '../lib/compiled'
 
