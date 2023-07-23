@@ -12,12 +12,14 @@ TABLE_HEADER = ['Title', 'Audience Score', 'Critics Score', 'Has Reviews?', 'Tra
 DEFAULT_OPTIONS = {
   sort: 'critic_score',
   sort_direction: 'desc',
-  rows: 20
+  rows: 20,
+  filter: ''
 }.freeze
 
 PROMPT = TTY::Prompt.new(quiet: true)
 
 PROMPT_OPTIONS = [
+  { name: 'Filter table', value: :filter },
   { name: 'Inspect a film', value: :inspect },
   { name: 'Change table', value: :prompt },
   { name: 'Quit', value: :quit }
@@ -30,7 +32,7 @@ PROMPT_OPTIONS_TABLE = [
 ].freeze
 
 def prompt(options)
-  PROMPT.say("Showing #{options[:rows]}/#{Compiled.films.count} films")
+  PROMPT.say("Showing #{Compiled.filtered(**options).count}/#{Compiled.films.count} films")
   answer = PROMPT.select('What next?', PROMPT_OPTIONS)
 
   case answer
@@ -38,9 +40,17 @@ def prompt(options)
     exit
   when :inspect
     prompt_inspect_which_film?(options)
+  when :filter
+    prompt_filter_table(options)
   else
     prompt_change_table(options)
   end
+end
+
+def prompt_filter_table(options)
+  answer = PROMPT.ask('Filter by name (hit return for no filter):')
+  options[:filter] = answer
+  draw(options)
 end
 
 def prompt_inspect_which_film?(options)
@@ -61,7 +71,7 @@ def prompt_inspect_film(film, options)
   PROMPT.say("#{answer}: #{film[answer]}")
 
   what_next_options = [
-    { name: 'Inspect something else of film', value: :inspect_film },
+    { name: 'Inspect something else about the film', value: :inspect_film },
     { name: 'Back to main', value: :main }
   ]
 

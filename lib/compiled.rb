@@ -22,10 +22,12 @@ class Compiled
   ].freeze
 
   class << self
-    def filtered(sort:, sort_direction:, rows:)
-      set = apply_sort(sort)
+    def filtered(filter:, sort:, sort_direction:, rows:)
+      set = films
+      set = set.select { |film| film['title'].downcase.match(filter.downcase) } if filter
+      set = apply_sort(set, sort)
       set.reverse! if sort_direction == 'desc'
-      set[0..rows]
+      set[0..rows-1]
     end
 
     def films
@@ -52,10 +54,10 @@ class Compiled
       nziff_film.slice(*NZIFF_FILM_PROPERTIES).merge(rt_film.slice(*RT_FILM_PROPERTIES))
     end
 
-    def apply_sort(sort)
-      films.sort_by { |film| film[sort] }
+    def apply_sort(set, sort)
+      set.sort_by { |film| film[sort] }
     rescue ArgumentError # Temporary
-      films.sort_by { |film| film[sort].to_i }
+      set.sort_by { |film| film[sort].to_i }
     end
   end
 end
