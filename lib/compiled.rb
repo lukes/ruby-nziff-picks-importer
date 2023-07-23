@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'tty-link'
 
 require_relative 'nziff'
 require_relative 'rottentomatoes'
+
+LINK = TTY::Link
 
 class Compiled
   NZIFF_FILM_PROPERTIES = %w[
@@ -13,18 +16,16 @@ class Compiled
 
   RT_FILM_PROPERTIES = %w[
     audience_score
+    bad_review
     critic_score
+    good_review
   ].freeze
 
   class << self
-    def as_table(sort:, sort_direction:, rows:)
-      table = apply_sort(sort)
-      table = apply_sort_direction(table, sort_direction)
-      table = apply_rows(table, rows)
-
-      table.map do |film|
-        [film['title'], film['critic_score'], film['trailer']]
-      end
+    def filtered(sort:, sort_direction:, rows:)
+      set = apply_sort(sort)
+      set.reverse! if sort_direction == 'desc'
+      set[0..rows]
     end
 
     def films
@@ -53,16 +54,8 @@ class Compiled
 
     def apply_sort(sort)
       films.sort_by { |film| film[sort] }
-    end
-
-    def apply_sort_direction(table, sort_direction)
-      return table.reverse if sort_direction == 'desc'
-
-      table
-    end
-
-    def apply_rows(table, rows)
-      table[0..rows]
+    rescue ArgumentError # Temporary
+      films.sort_by { |film| film[sort].to_i }
     end
   end
 end
