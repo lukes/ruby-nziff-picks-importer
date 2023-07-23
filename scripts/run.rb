@@ -13,17 +13,11 @@ DEFAULT_OPTIONS = {
   sort: 'critic_score',
   sort_direction: 'desc',
   rows: 20,
-  filter: ''
+  filter: '',
+  page: 1
 }.freeze
 
 PROMPT = TTY::Prompt.new(quiet: true)
-
-PROMPT_OPTIONS = [
-  { name: 'Filter table', value: :filter },
-  { name: 'Inspect a film', value: :inspect },
-  { name: 'Change table', value: :prompt },
-  { name: 'Quit', value: :quit }
-].freeze
 
 PROMPT_OPTIONS_TABLE = [
   { name: 'Change sort by', value: :sort },
@@ -33,7 +27,7 @@ PROMPT_OPTIONS_TABLE = [
 
 def prompt(options)
   PROMPT.say("Showing #{Compiled.filtered(**options).count}/#{Compiled.films.count} films")
-  answer = PROMPT.select('What next?', PROMPT_OPTIONS)
+  answer = PROMPT.select('What next?', prompt_options(options))
 
   case answer
   when :quit
@@ -42,14 +36,40 @@ def prompt(options)
     prompt_inspect_which_film?(options)
   when :filter
     prompt_filter_table(options)
+  when :next
+    options[:page] += 1
+    draw(options)
+  when :previous
+    options[:page] -= 1 unless options[:page] == 1
+    draw(options)
   else
     prompt_change_table(options)
   end
 end
 
+# rubocop: disable Metrics/MethodLength
+def prompt_options(options)
+  prompt_options = []
+  next_page_options = options.merge(page: options[:page] + 1)
+
+  prompt_options << { name: 'Next page', value: :next } if Compiled.filtered(**next_page_options).count.positive?
+  prompt_options << { name: 'Previous page', value: :previous } unless options[:page] == 1
+
+  prompt_options.push(
+    { name: 'Inspect a film', value: :inspect },
+    { name: 'Filter table', value: :filter },
+    { name: 'Change table', value: :prompt },
+    { name: 'Quit', value: :quit }
+  )
+end
+# rubocop: enable Metrics/MethodLength
+
 def prompt_filter_table(options)
   answer = PROMPT.ask('Filter by name (hit return for no filter):')
+
   options[:filter] = answer
+  options[:page] = 1
+
   draw(options)
 end
 
@@ -120,7 +140,7 @@ def films_to_rows(films)
       film['title'],
       film['audience_score'],
       film['critic_score'],
-      reviews.join,
+      reviews.join(' '),
       film['trailer']
     ]
   end
