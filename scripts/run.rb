@@ -202,7 +202,7 @@ def inspect_film(options, film)
     ['Rotten tomatoes page', "https://www.rottentomatoes.com#{film['path']}"]
   ]
 
-  table = TTY::Table.new(rows: rows, column_widths: [200, 500])
+  table = TTY::Table.new(rows: rows, padding: 1)
 
   system 'clear'
   puts table.render(:unicode, multiline: true) do |renderer|
