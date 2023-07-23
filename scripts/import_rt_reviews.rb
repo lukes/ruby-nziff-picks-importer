@@ -20,8 +20,6 @@ end
 
 prompt = TTY::Prompt.new
 
-# rubocop: disable Metrics/AbcSize
-# rubocop: disable Metrics/MethodLength
 def prompt!(results)
   case results.count
   when 0
@@ -42,8 +40,6 @@ def prompt!(results)
     results[answer]
   end
 end
-# rubocop: enable Metrics/AbcSize
-# rubocop: enable Metrics/MethodLength
 
 FileUtils.mkdir_p(RottenTomatoes::Import::IMPORT_PATH)
 

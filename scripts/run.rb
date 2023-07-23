@@ -31,6 +31,7 @@ PROMPT_OPTIONS_TABLE = [
   { name: 'Change number of rows', value: :rows }
 ].freeze
 
+# rubocop: disable Metrics/CyclomaticComplexity
 def prompt(options)
   PROMPT.say("Showing #{Compiled.filtered(**options).count}/#{Compiled.films.count} films")
 
@@ -43,15 +44,16 @@ def prompt(options)
   when :inspect
     prompt_inspect_which_film?(options)
   when :filter
-    options[:show_only_highlights] = false
-    options[:page] = 1
+    options.merge!(show_only_highlights: false, page: 1)
     prompt_filter_table(options)
   when :highlight
     prompt_highlight(options)
   when :toggle_only_highlights
-    options[:show_only_highlights] = !options[:show_only_highlights]
-    options[:filter] = ''
-    options[:page] = 1
+    options.merge!(
+      show_only_highlights: !options[:show_only_highlights],
+      filter: '',
+      page: 1
+    )
     draw(options)
   when :next
     options[:page] += 1
@@ -63,8 +65,8 @@ def prompt(options)
     prompt_change_table(options)
   end
 end
+# rubocop: enable Metrics/CyclomaticComplexity
 
-# rubocop: disable Metrics/MethodLength
 def prompt_options(options)
   prompt_options = []
   next_page_options = options.merge(page: options[:page] + 1)
@@ -72,11 +74,12 @@ def prompt_options(options)
   prompt_options << { name: 'Next page', value: :next } if Compiled.filtered(**next_page_options).count.positive?
   prompt_options << { name: 'Previous page', value: :previous } unless options[:page] == 1
 
-  toggle_highlight_text = if options[:show_only_highlights]
-    '✓ Showing only highlights'
-  else
-    '✗ Not showing only highlights'
-  end
+  toggle_highlight_text =
+    if options[:show_only_highlights]
+      '✓ Showing only highlights'
+    else
+      '✗ Not showing only highlights'
+    end
 
   prompt_options.push(
     { name: 'Inspect a film', value: :inspect },
@@ -87,7 +90,6 @@ def prompt_options(options)
     { name: 'Quit', value: :quit }
   )
 end
-# rubocop: enable Metrics/MethodLength
 
 def prompt_filter_table(options)
   answer = PROMPT.ask('Filter by name (hit return for no filter):')
@@ -182,8 +184,6 @@ def draw(options = DEFAULT_OPTIONS.dup)
   prompt(options)
 end
 
-# rubocop: disable Metrics/AbcSize
-# rubocop: disable Metrics/MethodLength
 def inspect_film(options, film)
   title = film['title']
   title += " (#{film['title_extra']})" if film['title_extra'] != ''
@@ -213,8 +213,6 @@ def inspect_film(options, film)
 
   draw(options)
 end
-# rubocop: enable Metrics/AbcSize
-# rubocop: enable Metrics/MethodLength
 
 def word_wrap(text, width: 80)
   return unless text

@@ -31,8 +31,6 @@ module NZIFF
 
     attr_reader :film
 
-    # rubocop: disable Metrics/MethodLength
-    # rubocop: disable Metrics/AbcSize
     def film_from_page
       page = Request.call("#{film.region}/#{film.slug}", year: film.year)
 
@@ -49,7 +47,5 @@ module NZIFF
         trailer: page.css('a[@data-trailer-id]').attr('href')&.value
       }
     end
-    # rubocop: enable Metrics/MethodLength
-    # rubocop: enable Metrics/AbcSize
   end
 end

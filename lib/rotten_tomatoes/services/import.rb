@@ -33,8 +33,6 @@ module RottenTomatoes
 
     attr_reader :path, :slug, :title, :year
 
-    # rubocop: disable Metrics/MethodLength
-    # rubocop: disable Metrics/AbcSize
     def film_from_page
       page = Request.call(path)
 
@@ -54,8 +52,6 @@ module RottenTomatoes
         good_review: good_review
       }
     end
-    # rubocop: enable Metrics/MethodLength
-    # rubocop: enable Metrics/AbcSize
 
     def bad_review
       page = Request.call(format(REVIEW_PATH, path: path, sort: 'rotten'))
