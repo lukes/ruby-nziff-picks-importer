@@ -7,6 +7,7 @@ require 'fileutils'
 require 'pry'
 
 require_relative '../lib/compiled'
+require_relative '../lib/nziff'
 
 CHOICES_SORT = %w[audience_score critic_score title].freeze
 CHOICES_SORT_DIRECTION = %w[asc desc].freeze
@@ -117,25 +118,7 @@ def prompt_inspect_which_film?(options)
 
   answer = PROMPT.select('Which film?', film_options, per_page: options[:rows] + 1, filter: true)
 
-  prompt_inspect_film(films[answer], options)
-end
-
-def prompt_inspect_film(film, options)
-  keys_with_values = film.select { |_k, v| v }.keys
-  answer = PROMPT.select('Which thing?', keys_with_values, per_page: keys_with_values.count)
-
-  PROMPT.keypress(PASTEL.white.on_blue("#{answer}: #{film[answer]}"))
-
-  what_next_options = [
-    { name: 'Inspect something else about the film', value: :inspect_film },
-    { name: 'Back to main', value: :main }
-  ]
-
-  answer = PROMPT.select('What next?', what_next_options, per_page: options[:rows] + 1)
-
-  return draw(options) if answer == :main
-
-  prompt_inspect_film(film, options)
+  inspect_film(options, films[answer])
 end
 
 def prompt_change_table(options)
@@ -197,6 +180,46 @@ def draw(options = DEFAULT_OPTIONS.dup)
   puts table.render(:unicode, multiline: true, resize: true)
 
   prompt(options)
+end
+
+# rubocop: disable Metrics/AbcSize
+# rubocop: disable Metrics/MethodLength
+def inspect_film(options, film)
+  title = film['title']
+  title += " (#{film['title_extra']})" if film['title_extra'] != ''
+
+  rows = [
+    ['Title', title],
+    ['Director', film['director']],
+    ['Year', film['year']],
+    ['Tag', film['tag']],
+    ['Critic Score', film['critic_score']],
+    ['Audience Score', film['audience_score']],
+    ['Good review', word_wrap(film['good_review'])],
+    ['Bad review', word_wrap(film['bad_review'])],
+    ['Trailer', film['trailer']],
+    ['NZ Film Fest page', film['nziff_url']],
+    ['Rotten tomatoes page', "https://www.rottentomatoes.com#{film['path']}"]
+  ]
+
+  table = TTY::Table.new(rows: rows, column_widths: [200, 500])
+
+  system 'clear'
+  puts table.render(:unicode, multiline: true) do |renderer|
+    renderer.border.separator = :each_row
+  end
+
+  PROMPT.keypress(PASTEL.white.on_blue('Press to return'))
+
+  draw(options)
+end
+# rubocop: enable Metrics/AbcSize
+# rubocop: enable Metrics/MethodLength
+
+def word_wrap(text, width: 80)
+  return unless text
+
+  text.gsub(/(.{1,#{width}})(\s+|\Z)/, "\\1\n")
 end
 
 def toggle_highlight_film!(film)

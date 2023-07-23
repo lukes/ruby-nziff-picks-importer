@@ -8,9 +8,13 @@ module NZIFF
     HOST = 'https://www.nziff.co.nz'
 
     def self.call(path, year: Time.now.year.to_s)
-      uri = [HOST, year, path].join('/')
+      uri = uri(path, year: year)
 
       Nokogiri::HTML(URI.parse(uri).open.read)
+    end
+
+    def self.uri(path, year: Time.now.year.to_s)
+      [HOST, year, path].join('/')
     end
   end
 end

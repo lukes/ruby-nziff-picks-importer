@@ -9,7 +9,6 @@ gem 'json'
 gem 'nokogiri'
 gem 'open-uri'
 gem 'rubocop', require: false
-gem 'tty-link'
 gem 'tty-progressbar'
 gem 'tty-prompt'
 gem 'tty-table'

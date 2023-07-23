@@ -1,18 +1,20 @@
 # frozen_string_literal: true
 
 require 'json'
-require 'tty-link'
 
 require_relative 'nziff'
 require_relative 'rottentomatoes'
 
-LINK = TTY::Link
-
 class Compiled
   NZIFF_FILM_PROPERTIES = %w[
+    nziff_url
+    region
     slug
+    tag
     title
+    title_extra
     trailer
+    year
   ].freeze
 
   RT_FILM_PROPERTIES = %w[
@@ -20,6 +22,7 @@ class Compiled
     bad_review
     critic_score
     good_review
+    path
   ].freeze
 
   HIGHLIGHT_PATH = 'highlighted'
