@@ -4,6 +4,8 @@ require 'tty-prompt'
 require 'tty-table'
 require 'fileutils'
 
+require 'pry'
+
 require_relative '../lib/compiled'
 
 CHOICES_SORT = %w[audience_score critic_score title].freeze
@@ -40,11 +42,15 @@ def prompt(options)
   when :inspect
     prompt_inspect_which_film?(options)
   when :filter
+    options[:show_only_highlights] = false
+    options[:page] = 1
     prompt_filter_table(options)
   when :highlight
     prompt_highlight(options)
   when :toggle_only_highlights
     options[:show_only_highlights] = !options[:show_only_highlights]
+    options[:filter] = ''
+    options[:page] = 1
     draw(options)
   when :next
     options[:page] += 1
@@ -66,14 +72,14 @@ def prompt_options(options)
   prompt_options << { name: 'Previous page', value: :previous } unless options[:page] == 1
 
   toggle_highlight_text = if options[:show_only_highlights]
-    'Remove show only highlights'
+    '✓ Showing only highlights'
   else
-    'Show only highlights'
+    '✗ Not showing only highlights'
   end
 
   prompt_options.push(
     { name: 'Inspect a film', value: :inspect },
-    { name: 'Filter table by film name', value: :filter },
+    { name: 'Search by title', value: :filter },
     { name: toggle_highlight_text, value: :toggle_only_highlights },
     { name: 'Add/remove highlight on film', value: :highlight },
     { name: 'Change table sort/rows', value: :prompt },
@@ -116,7 +122,7 @@ end
 
 def prompt_inspect_film(film, options)
   keys_with_values = film.select { |_k, v| v }.keys
-  answer = PROMPT.select('Which thing?', keys_with_values)
+  answer = PROMPT.select('Which thing?', keys_with_values, per_page: keys_with_values.count)
 
   PROMPT.keypress(PASTEL.white.on_blue("#{answer}: #{film[answer]}"))
 
@@ -187,6 +193,7 @@ def draw(options = DEFAULT_OPTIONS.dup)
   rows = films_to_rows(Compiled.filtered(**options))
   table = TTY::Table.new(header: TABLE_HEADER, rows: rows)
 
+  system 'clear'
   puts table.render(:unicode, multiline: true, resize: true)
 
   prompt(options)

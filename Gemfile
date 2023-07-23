@@ -14,3 +14,5 @@ gem 'tty-progressbar'
 gem 'tty-prompt'
 gem 'tty-table'
 gem 'slop'
+
+gem 'pry'
