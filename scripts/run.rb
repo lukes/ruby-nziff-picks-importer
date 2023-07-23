@@ -2,6 +2,7 @@
 
 require 'tty-prompt'
 require 'tty-table'
+require 'fileutils'
 
 require_relative '../lib/compiled'
 
@@ -14,10 +15,12 @@ DEFAULT_OPTIONS = {
   sort_direction: 'desc',
   rows: 20,
   filter: '',
-  page: 1
+  page: 1,
+  show_only_highlights: false
 }.freeze
 
 PROMPT = TTY::Prompt.new(quiet: true)
+PASTEL = Pastel.new
 
 PROMPT_OPTIONS_TABLE = [
   { name: 'Change sort by', value: :sort },
@@ -27,7 +30,9 @@ PROMPT_OPTIONS_TABLE = [
 
 def prompt(options)
   PROMPT.say("Showing #{Compiled.filtered(**options).count}/#{Compiled.films.count} films")
-  answer = PROMPT.select('What next?', prompt_options(options))
+
+  prompt_options = prompt_options(options)
+  answer = PROMPT.select('What next?', prompt_options, per_page: prompt_options.count)
 
   case answer
   when :quit
@@ -36,6 +41,11 @@ def prompt(options)
     prompt_inspect_which_film?(options)
   when :filter
     prompt_filter_table(options)
+  when :highlight
+    prompt_highlight(options)
+  when :toggle_only_highlights
+    options[:show_only_highlights] = !options[:show_only_highlights]
+    draw(options)
   when :next
     options[:page] += 1
     draw(options)
@@ -55,10 +65,18 @@ def prompt_options(options)
   prompt_options << { name: 'Next page', value: :next } if Compiled.filtered(**next_page_options).count.positive?
   prompt_options << { name: 'Previous page', value: :previous } unless options[:page] == 1
 
+  toggle_highlight_text = if options[:show_only_highlights]
+    'Remove show only highlights'
+  else
+    'Show only highlights'
+  end
+
   prompt_options.push(
     { name: 'Inspect a film', value: :inspect },
-    { name: 'Filter table', value: :filter },
-    { name: 'Change table', value: :prompt },
+    { name: 'Filter table by film name', value: :filter },
+    { name: toggle_highlight_text, value: :toggle_only_highlights },
+    { name: 'Add/remove highlight on film', value: :highlight },
+    { name: 'Change table sort/rows', value: :prompt },
     { name: 'Quit', value: :quit }
   )
 end
@@ -69,6 +87,18 @@ def prompt_filter_table(options)
 
   options[:filter] = answer
   options[:page] = 1
+
+  draw(options)
+end
+
+def prompt_highlight(options)
+  films = Compiled.filtered(**options)
+  film_options = films.each_with_index.map do |film, i|
+    { name: film['title'], value: i }
+  end
+
+  answer = PROMPT.select('Toggle highlight on which film?', film_options, per_page: options[:rows] + 1, filter: true)
+  toggle_highlight_film!(films[answer])
 
   draw(options)
 end
@@ -88,7 +118,7 @@ def prompt_inspect_film(film, options)
   keys_with_values = film.select { |_k, v| v }.keys
   answer = PROMPT.select('Which thing?', keys_with_values)
 
-  PROMPT.say("#{answer}: #{film[answer]}")
+  PROMPT.keypress(PASTEL.white.on_blue("#{answer}: #{film[answer]}"))
 
   what_next_options = [
     { name: 'Inspect something else about the film', value: :inspect_film },
@@ -136,14 +166,21 @@ def films_to_rows(films)
     reviews << '✓Good' if film['good_review']
     reviews << '✓Bad' if film['bad_review']
 
+    title = film['title']
+    title = PASTEL.white.on_blue(title) if highlighted?(film)
+
     [
-      film['title'],
+      title,
       film['audience_score'],
       film['critic_score'],
       reviews.join(' '),
       film['trailer']
     ]
   end
+end
+
+def highlighted?(film)
+  Compiled.highlighted?(film)
 end
 
 def draw(options = DEFAULT_OPTIONS.dup)
@@ -153,6 +190,10 @@ def draw(options = DEFAULT_OPTIONS.dup)
   puts table.render(:unicode, multiline: true, resize: true)
 
   prompt(options)
+end
+
+def toggle_highlight_film!(film)
+  Compiled.toggle_highlight!(film)
 end
 
 draw

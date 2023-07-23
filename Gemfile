@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 
 gem 'activesupport'
 gem 'cgi'
+gem 'fileutils'
 gem 'json'
 gem 'nokogiri'
 gem 'open-uri'

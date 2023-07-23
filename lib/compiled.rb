@@ -10,6 +10,7 @@ LINK = TTY::Link
 
 class Compiled
   NZIFF_FILM_PROPERTIES = %w[
+    slug
     title
     trailer
   ].freeze
@@ -21,10 +22,13 @@ class Compiled
     good_review
   ].freeze
 
+  HIGHLIGHT_PATH = 'highlighted'
+
   class << self
-    def filtered(filter:, page:, rows:, sort:, sort_direction:)
+    def filtered(filter:, page:, rows:, show_only_highlights:, sort:, sort_direction:)
       set = films
       set = apply_filter(set, filter)
+      set = apply_show_only_highlights(set, show_only_highlights)
       set = apply_sort(set, sort)
       set = apply_sort_direction(set, sort_direction)
       apply_rows(set, page, rows)
@@ -34,6 +38,20 @@ class Compiled
       @films ||= nziff_films.map do |film|
         compile_with_rt_film(film)
       end
+    end
+
+    def toggle_highlight!(film)
+      FileUtils.mkdir_p(HIGHLIGHT_PATH)
+
+      path = File.join(HIGHLIGHT_PATH, film['slug'])
+      return FileUtils.rm(path) if File.exist?(path)
+
+      FileUtils.touch(path)
+    end
+
+    def highlighted?(film)
+      path = File.join(HIGHLIGHT_PATH, film['slug'])
+      File.exist?(path)
     end
 
     private
@@ -58,6 +76,12 @@ class Compiled
       return set if filter.nil? || filter.strip == ''
 
       set.select { |film| film['title'].downcase.match(filter.downcase) }
+    end
+
+    def apply_show_only_highlights(set, show_only_highlights)
+      return set unless show_only_highlights
+
+      set.select { |film| highlighted?(film) }
     end
 
     def apply_sort(set, sort)
