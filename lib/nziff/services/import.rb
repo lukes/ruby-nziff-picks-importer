@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'fileutils'
 require 'json'
 
 module NZIFF
@@ -11,6 +12,10 @@ module NZIFF
     end
 
     class << self
+      def prepare!
+        FileUtils.mkdir_p(IMPORT_PATH)
+      end
+
       def imported
         @imported ||= Dir.glob("#{IMPORT_PATH}/*.json").map do |f|
           JSON.parse(File.read(f))

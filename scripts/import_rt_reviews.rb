@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'fileutils'
 require 'slop'
 require 'tty-prompt'
 
@@ -41,10 +40,10 @@ def prompt!(results)
   end
 end
 
-FileUtils.mkdir_p(RottenTomatoes::Import::IMPORT_PATH)
-
 nziff_films = NZIFF::Import.imported
 imported_slugs = RottenTomatoes::Import.imported.map { _1['nziff_slug'] }
+
+RottenTomatoes::Import.prepare!
 
 nziff_films.each do |nziff_film|
   director, slug, title, year = nziff_film.values_at('director', 'slug', 'title', 'year')

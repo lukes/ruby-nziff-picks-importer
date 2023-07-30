@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'fileutils'
 require 'slop'
 require 'tty-progressbar'
 require 'tty-prompt'
@@ -31,14 +30,14 @@ if region.nil?
   region = prompt.select('Select a region to import:', options, filter: true, per_page: options.length + 1)
 end
 
-FileUtils.mkdir_p(NZIFF::Import::IMPORT_PATH)
-
 films = NZIFF::Search.new(region: region.downcase, year: year).call
 imported_slugs = NZIFF::Import.imported.map { _1['slug'] }
 
 puts "#{films.count} found"
 
 bar = TTY::ProgressBar.new('Downloading [:bar] :current/:total', total: films.count, clear: true)
+
+NZIFF::Import.prepare!
 
 films.each do |film|
   bar.advance
