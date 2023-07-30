@@ -93,17 +93,10 @@ bundle
 
 ## Use
 
-First, import data from the NZ Film Festival website, and Rotten Tomatoes. Pass `--help` to each script to see the options:
+Import film data from the NZ Film Festival website:
 
 ```bash
-bundle exec ruby scripts/import_nziff_films.rb --help
-bundle exec ruby scripts/import_rt_reviews.rb --help
-```
-
-Example, to import film data for Auckland:
-
-```bash
-bundle exec ruby scripts/import_nziff_films.rb --region tamaki-makaurau-auckland
+bundle exec ruby scripts/import_nziff_films.rb
 ```
 
 And then import the Rotten Tomatoes review scores for those films:
@@ -112,7 +105,9 @@ And then import the Rotten Tomatoes review scores for those films:
 bundle exec ruby scripts/import_rt_reviews.rb
 ```
 
-Next, run the app:
+Both scripts can be passed `--help` to see some options.
+
+Finally, run the app:
 
 ```bash
 bundle exec ruby scripts/run.rb

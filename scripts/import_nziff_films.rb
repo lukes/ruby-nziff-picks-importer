@@ -3,24 +3,37 @@
 require 'fileutils'
 require 'slop'
 require 'tty-progressbar'
+require 'tty-prompt'
 
 require_relative '../lib/nziff'
 
 opts = Slop.parse do |o|
-  o.string '-h', '--help', 'Help'
+  o.bool '-h', '--help', 'Help'
   o.string '-r', '--region', 'Region'
   o.integer '-y', '--year', 'Year', default: Time.now.year
   o.bool '-x', '--replace', 'Replace imported', default: false
 end
 
-if opts[:region].nil? || opts[:help]
+if opts[:help]
   puts opts
   exit
 end
 
+region = opts[:region]
+year = opts[:year]
+
+if region.nil?
+  options = NZIFF::Regions.new(year).call.map do |r|
+    { name: r.name, value: r.slug }
+  end
+
+  prompt = TTY::Prompt.new
+  region = prompt.select('Select a region to import:', options, filter: true, per_page: options.length + 1)
+end
+
 FileUtils.mkdir_p(NZIFF::Import::IMPORT_PATH)
 
-films = NZIFF::Search.new(region: opts[:region].downcase, year: opts[:year]).call
+films = NZIFF::Search.new(region: region.downcase, year: year).call
 imported_slugs = NZIFF::Import.imported.map { _1['slug'] }
 
 puts "#{films.count} found"

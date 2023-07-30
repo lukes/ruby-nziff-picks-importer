@@ -8,7 +8,7 @@ require_relative '../lib/nziff'
 require_relative '../lib/rottentomatoes'
 
 opts = Slop.parse do |o|
-  o.string '-h', '--help', 'Help'
+  o.bool '-h', '--help', 'Help'
   o.string '-s', '--start-from', 'Start from (slug)'
   o.bool '-x', '--replace', 'Replace imported', default: false
 end
