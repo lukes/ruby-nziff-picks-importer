@@ -42,9 +42,9 @@ module RottenTomatoes
     def film_from_page
       page = Request.call(path)
 
-      scores = page.css('score-board')
-      audience_score = scores.attr('audiencescore').value
-      critic_score = scores.attr('tomatometerscore').value
+      scores = page.css('media-scorecard')
+      audience_score = scores.css('[slot=audienceScore]').text.strip
+      critic_score = scores.css('[slot=criticsScore]').text.strip
 
       {
         scraped: Time.now,

@@ -45,7 +45,7 @@ module NZIFF
         title: page.css('.article-title').xpath("span[@itemprop='name']").text,
         title_extra: page.css('.title-extra').text,
         director: page.css("a[@itemprop='director']").text,
-        year: film.year.to_i,
+        year: page.css("[itemprop='copyrightYear']").text.to_i,
         region: film.region,
         slug: film.slug,
         nziff_url: Request.uri("#{film.region}/#{film.slug}", year: film.year),

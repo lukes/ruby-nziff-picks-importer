@@ -62,7 +62,6 @@ GEM
       date
     tty-color (0.6.0)
     tty-cursor (0.7.1)
-    tty-link (0.1.1)
     tty-progressbar (0.18.2)
       strings-ansi (~> 0.2)
       tty-cursor (~> 0.7)
@@ -100,7 +99,6 @@ DEPENDENCIES
   pry
   rubocop
   slop
-  tty-link
   tty-progressbar
   tty-prompt
   tty-table

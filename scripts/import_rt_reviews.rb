@@ -17,20 +17,24 @@ if opts[:help]
   exit
 end
 
-prompt = TTY::Prompt.new
+PROMPT = TTY::Prompt.new
 
 def prompt!(results)
   case results.count
   when 0
-    prompt.say('No results found')
+    PROMPT.say('No results found')
+
+    nil
   when 1
     result = results.first
-    prompt.yes?("Import #{result.title}, #{result.year}?") == true
+    PROMPT.yes?("Import #{result.title}, #{result.year}?") == true
+
+    result
   else
     prompt_options = results.each_with_index.map { |r, i| { "#{r.title}, #{r.year}" => i } }
-    prompt_options << { 'Skip this' => results.count }
+    prompt_options.unshift({ 'Skip this' => results.count })
 
-    answer = prompt.select(
+    answer = PROMPT.select(
       "Found #{results.count} results. Import which film?",
       prompt_options,
       per_page: results.count + 1
@@ -51,17 +55,17 @@ nziff_films.each do |nziff_film|
   next if opts[:'start-from'] && slug < opts[:'start-from']
 
   if !opts[:replace] && imported_slugs.include?(slug)
-    prompt.say("Skipping #{title}, already imported")
+    PROMPT.say("Skipping #{title}, already imported")
     next
   end
 
-  prompt.say("Searching for #{title}, #{year}", color: :blue)
+  PROMPT.say("Searching for #{title}, #{year}", color: :blue)
 
   results = RottenTomatoes::Search.new(title: title, director: director).call
   answer = prompt!(results)
 
   if answer
     RottenTomatoes::Import.new(answer, slug: slug).call
-    prompt.ok('Imported!')
+    PROMPT.ok('Imported!')
   end
 end
