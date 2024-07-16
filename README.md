@@ -2,8 +2,16 @@ ruby-nziff-picks-importer
 =========================
 
 Ruby library to import film data from the New Zealand International
-Film Festival, and correlate it with review scores from Rotten Tomatoes
-as a supplement to the NZIFF booklet, to help you decide which films to watch.
+Film Festival, and correlate it with review scores from Rotten Tomatoes,
+as a supplement to the NZIFF booklet to help you decide which films to watch.
+
+### Features:
+
+- See films correlated with reviews and ratings
+- Find trailers
+- Mark a film as a highlight to go back to it easily
+- Search by title
+- Sort by ratings or title
 
 ```
 ┌──────────────────────────────────────┬───────────────┬──────────────┬─────────────┬───────────────────────────────────────────┐
@@ -112,11 +120,3 @@ Finally, run the app:
 ```bash
 bundle exec ruby scripts/run.rb
 ```
-
-### Features:
-
-- See films correlated with reviews and ratings
-- Watch trailers
-- Mark a film as a highlight to go back to it easily
-- Search by title
-- Sort by ratings or title
