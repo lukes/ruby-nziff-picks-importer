@@ -3,7 +3,7 @@ ruby-nziff-picks-importer
 
 Ruby library to import film data from the New Zealand International
 Film Festival, and correlate it with review scores from Rotten Tomatoes
-to help you decide which films to watch.
+as a supplement to the NZIFF booklet, to help you decide which films to watch.
 
 ```
 ┌──────────────────────────────────────┬───────────────┬──────────────┬─────────────┬───────────────────────────────────────────┐
